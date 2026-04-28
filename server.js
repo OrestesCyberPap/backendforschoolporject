@@ -13,11 +13,11 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Theatre Booking API!' });
 });
 
-// We will add the other routes here later
-// app.use('/api/auth', require('./routes/authRoutes'));
-// app.use('/api/theatres', require('./routes/theatreRoutes'));
-// app.use('/api/shows', require('./routes/showRoutes'));
-// app.use('/api/reservations', require('./routes/reservationRoutes'));
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/theatres', require('./routes/theatreRoutes'));
+app.use('/api/shows', require('./routes/showRoutes'));
+app.use('/api/reservations', require('./routes/reservationRoutes'));
 
 const PORT = process.env.PORT || 3000;
 
