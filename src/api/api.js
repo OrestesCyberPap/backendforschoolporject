@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 // Set your computer's local IP address here instead of localhost
 // because Android Emulator needs to reach your PC
-const API_URL = 'http://10.0.2.2:3000/api'; 
+const API_URL = 'http://192.168.1.174:3000/api'; 
 
 const api = axios.create({
   baseURL: API_URL,
