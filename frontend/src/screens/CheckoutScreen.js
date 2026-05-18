@@ -1,19 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import api from '../api/api';
 
 export default function CheckoutScreen({ route, navigation }) {
-  const { show, date, time, seats, totalPrice } = route.params;
+  const { show, showtime, seats, totalPrice } = route.params;
   const [name, setName] = useState('');
   const [card, setCard] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!name || card.length < 16) {
       Alert.alert('Validation Error', 'Please enter a valid name and a 16-digit card number.');
       return;
     }
-    // Navigate to confirmation/MyTickets
-    navigation.navigate('MyTickets', { newTicket: { show, date, time, seats, totalPrice }});
+    
+    setLoading(true);
+    try {
+      await api.post('/reservations', {
+        showtimeId: showtime.showtime_id,
+        seats: seats
+      });
+      Alert.alert('Success!', 'Your reservation has been confirmed.', [
+        { text: 'OK', onPress: () => navigation.navigate('MyTickets', { refresh: true }) }
+      ]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', error.response?.data?.message || 'Failed to create reservation.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const dateObj = new Date(showtime.date_time);
+  const displayDate = dateObj.toLocaleDateString();
+  const displayTime = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
@@ -26,7 +46,7 @@ export default function CheckoutScreen({ route, navigation }) {
 
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>{show.title}</Text>
-          <Text style={styles.summaryText}>{date} at {time}</Text>
+          <Text style={styles.summaryText}>{displayDate} at {displayTime}</Text>
           <Text style={styles.summaryText}>Seats: {seats.join(', ')}</Text>
           <View style={styles.divider} />
           <Text style={styles.totalText}>Total: ${totalPrice}</Text>
@@ -40,8 +60,12 @@ export default function CheckoutScreen({ route, navigation }) {
           <TextInput style={[styles.input, {flex: 1}]} placeholder="CVV" placeholderTextColor="#666" keyboardType="numeric" maxLength={3} />
         </View>
 
-        <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm}>
-          <Text style={styles.confirmText}>Confirm Reservation</Text>
+        <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm} disabled={loading}>
+          {loading ? (
+             <ActivityIndicator color="#fff" />
+          ) : (
+             <Text style={styles.confirmText}>Confirm Reservation</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

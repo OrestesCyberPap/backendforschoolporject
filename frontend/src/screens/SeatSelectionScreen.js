@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import api from '../api/api';
 
 const ROWS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const COLS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// Randomly book some seats for mockup
-const MOCK_BOOKED_SEATS = ['A3', 'A4', 'C5', 'D2', 'E8', 'F1', 'F2'];
-
 export default function SeatSelectionScreen({ route, navigation }) {
-  const { show, date, time } = route.params;
+  const { show, showtime } = route.params;
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [bookedSeats, setBookedSeats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookedSeats = async () => {
+      try {
+        const response = await api.get(`/shows/showtimes/${showtime.showtime_id}/seats`);
+        setBookedSeats(response.data); // Should be an array of strings like ['A1', 'B2']
+      } catch (error) {
+        console.error('Error fetching seats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookedSeats();
+  }, [showtime.showtime_id]);
 
   const toggleSeat = (seatId) => {
-    if (MOCK_BOOKED_SEATS.includes(seatId)) return;
+    if (bookedSeats.includes(seatId)) return;
     if (selectedSeats.includes(seatId)) {
       setSelectedSeats(selectedSeats.filter(id => id !== seatId));
     } else {
@@ -20,7 +34,7 @@ export default function SeatSelectionScreen({ route, navigation }) {
     }
   };
 
-  const totalPrice = selectedSeats.length * show.price;
+  const totalPrice = selectedSeats.length * showtime.price;
 
   return (
     <View style={styles.container}>
@@ -37,36 +51,42 @@ export default function SeatSelectionScreen({ route, navigation }) {
       </View>
 
       {/* Seat Map */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mapScroll}>
-        <View style={styles.seatMap}>
-          {ROWS.map(row => (
-            <View key={row} style={styles.row}>
-              <Text style={styles.rowLabel}>{row}</Text>
-              {COLS.map(col => {
-                const seatId = `${row}${col}`;
-                const isBooked = MOCK_BOOKED_SEATS.includes(seatId);
-                const isSelected = selectedSeats.includes(seatId);
-                
-                let seatStyle = styles.seatAvailable;
-                if (isBooked) seatStyle = styles.seatBooked;
-                if (isSelected) seatStyle = styles.seatSelected;
-
-                return (
-                  <TouchableOpacity 
-                    key={seatId} 
-                    style={[styles.seat, seatStyle]} 
-                    disabled={isBooked}
-                    onPress={() => toggleSeat(seatId)}
-                    activeOpacity={0.7}
-                  >
-                    {isSelected && <View style={styles.innerSeatSelected} />}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
+      {loading ? (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <ActivityIndicator size="large" color="#E50914" />
         </View>
-      </ScrollView>
+      ) : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.mapScroll}>
+          <View style={styles.seatMap}>
+            {ROWS.map(row => (
+              <View key={row} style={styles.row}>
+                <Text style={styles.rowLabel}>{row}</Text>
+                {COLS.map(col => {
+                  const seatId = `${row}${col}`;
+                  const isBooked = bookedSeats.includes(seatId);
+                  const isSelected = selectedSeats.includes(seatId);
+                  
+                  let seatStyle = styles.seatAvailable;
+                  if (isBooked) seatStyle = styles.seatBooked;
+                  if (isSelected) seatStyle = styles.seatSelected;
+
+                  return (
+                    <TouchableOpacity 
+                      key={seatId} 
+                      style={[styles.seat, seatStyle]} 
+                      disabled={isBooked}
+                      onPress={() => toggleSeat(seatId)}
+                      activeOpacity={0.7}
+                    >
+                      {isSelected && <View style={styles.innerSeatSelected} />}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      )}
 
       {/* Summary Section */}
       <View style={styles.summaryBox}>
@@ -75,7 +95,7 @@ export default function SeatSelectionScreen({ route, navigation }) {
         <TouchableOpacity 
           style={[styles.checkoutBtn, selectedSeats.length === 0 && styles.checkoutBtnDisabled]} 
           disabled={selectedSeats.length === 0}
-          onPress={() => navigation.navigate('Checkout', { show, date, time, seats: selectedSeats, totalPrice })}
+          onPress={() => navigation.navigate('Checkout', { show, showtime, seats: selectedSeats, totalPrice })}
         >
           <Text style={styles.checkoutText}>Proceed to Checkout</Text>
         </TouchableOpacity>

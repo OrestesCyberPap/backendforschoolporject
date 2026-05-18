@@ -51,3 +51,25 @@ exports.getShowtimes = async (req, res) => {
         if (conn) conn.release();
     }
 };
+
+exports.getBookedSeats = async (req, res) => {
+    let conn;
+    try {
+        conn = await db.getConnection();
+        const { showtimeId } = req.params;
+        
+        const seats = await conn.query(`
+            SELECT rs.seat_label 
+            FROM reserved_seats rs
+            JOIN reservations r ON rs.reservation_id = r.reservation_id
+            WHERE r.showtime_id = ?
+        `, [showtimeId]);
+        
+        res.json(seats.map(s => s.seat_label));
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    } finally {
+        if (conn) conn.release();
+    }
+};
