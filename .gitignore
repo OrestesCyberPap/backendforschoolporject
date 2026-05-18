@@ -1,2 +1,19 @@
+# Dependencies
 node_modules/
+frontend/node_modules/
+
+# Environment
 .env
+
+# Expo
+frontend/.expo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+
+# Build
+setup_frontend.bat
