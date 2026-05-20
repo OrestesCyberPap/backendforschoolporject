@@ -1,10 +1,10 @@
-# 🎭 Theatre Booking System
+# Theatre Booking System
 ### Mobile & Distributed Systems (CN6035)
 > Εφαρμογή κράτησης θέσεων σε θεατρικές παραστάσεις μέσω κινητής συσκευής
 
 ---
 
-## 📐 Αρχιτεκτονική Συστήματος
+## Αρχιτεκτονική Συστήματος
 
 ```
 ┌──────────────────┐     HTTP/REST      ┌──────────────────┐     SQL        ┌──────────────┐
@@ -15,7 +15,7 @@
      Frontend                               Backend                         Database
 ```
 
-## 🛠️ Τεχνολογίες
+## Τεχνολογίες
 
 | Layer | Τεχνολογία |
 |-------|-----------|
@@ -26,7 +26,7 @@
 
 ---
 
-## ⚡ Οδηγίες Εγκατάστασης & Εκτέλεσης
+## Οδηγίες Εγκατάστασης & Εκτέλεσης
 
 ### Προαπαιτούμενα
 - [Node.js](https://nodejs.org/) (v18+)
@@ -59,7 +59,7 @@ SOURCE database.sql;
 
 Εναλλακτικά, αντιγράψτε-επικολλήστε το περιεχόμενο του `database.sql` στο query editor.
 
-> **Πίνακες που δημιουργούνται:** `users`, `theatres`, `shows`, `showtimes`, `reservations`
+> **Πίνακες που δημιουργούνται:** `users`, `theatres`, `shows`, `showtimes`, `reservations`, `reserved_seats`
 
 ---
 
@@ -90,7 +90,7 @@ JWT_SECRET=your_secret_key_here
 npm run dev
 ```
 
-✅ Θα πρέπει να δείτε: `Server is running on port 3000`
+Θα πρέπει να δείτε: `Server is running on port 3000`
 
 ---
 
@@ -128,7 +128,7 @@ npx expo start
 
 ---
 
-## 📱 Λειτουργίες Εφαρμογής
+## Λειτουργίες Εφαρμογής
 
 ### Authentication (Ταυτοποίηση)
 - Εγγραφή νέου χρήστη (email + password)
@@ -143,17 +143,18 @@ npx expo start
 
 ### Κράτηση Θέσεων
 - Διαδραστικός χάρτης θέσεων (Seat Map)
+- Επιλογή συγκεκριμένων θέσεων από τη βάση δεδομένων
 - 3 καταστάσεις θέσεων: Διαθέσιμη, Επιλεγμένη, Κρατημένη
 - Real-time υπολογισμός κόστους
 - Φόρμα πληρωμής (Checkout)
 
 ### Προφίλ Χρήστη
 - Προβολή ιστορικού κρατήσεων (My Tickets)
-- QR Code εισιτηρίου
+- Ακύρωση κρατήσεων
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Public (Χωρίς Authentication)
 | Method | Endpoint | Περιγραφή |
@@ -164,6 +165,7 @@ npx expo start
 | GET | `/api/shows` | Λίστα παραστάσεων |
 | GET | `/api/shows?title=X` | Αναζήτηση παράστασης |
 | GET | `/api/shows/:id/showtimes` | Ημερομηνίες/ώρες παράστασης |
+| GET | `/api/shows/showtimes/:id/seats` | Πιασμένες θέσεις ανά παράσταση |
 
 ### Protected (Απαιτείται JWT Token)
 | Method | Endpoint | Περιγραφή |
@@ -174,13 +176,15 @@ npx expo start
 
 ---
 
-## 🗄️ Δομή Βάσης Δεδομένων
+## Δομή Βάσης Δεδομένων
 
 ```sql
 users (user_id PK, name, email UNIQUE, password_hash, created_at)
   │
   └── reservations (reservation_id PK, user_id FK, showtime_id FK, number_of_tickets, created_at)
-                                          │
+        │
+        └── reserved_seats (id PK, reservation_id FK, seat_label)
+                                          
 theatres (theatre_id PK, name, location, description)
   │
   └── shows (show_id PK, theatre_id FK, title, description, duration, age_rating)
@@ -190,7 +194,7 @@ theatres (theatre_id PK, name, location, description)
 
 ---
 
-## 📂 Δομή Φακέλων
+## Δομή Φακέλων
 
 ```
 backendforschoolporject/
@@ -231,7 +235,7 @@ backendforschoolporject/
 
 ---
 
-## 🔐 Ασφάλεια
+## Ασφάλεια
 
 - **Passwords:** Κρυπτογραφημένα με Bcrypt (salt rounds: 10)
 - **Authentication:** JWT tokens (10h expiry)
@@ -241,7 +245,12 @@ backendforschoolporject/
 
 ---
 
-## 📜 Changelog
+## Changelog
+
+### v3.0 — [18-05-2026] Full Full-Stack Integration
+- **[Integration]** Όλες οι οθόνες του frontend συνδέθηκαν με τα API endpoints.
+- **[Database]** Προστέθηκε πίνακας reserved_seats.
+- **[Features]** Λειτουργία αναζήτησης, έλεγχος διαθεσιμότητας θέσεων, ακύρωση κράτησης.
 
 ### v2.0 — [18-05-2026] Frontend Implementation
 - **[Frontend]** Δημιουργία React Native (Expo) mobile app
@@ -259,7 +268,7 @@ backendforschoolporject/
 
 ---
 
-## 👤 Φοιτητής
+## Φοιτητής
 
 **Μάθημα:** Mobile & Distributed Systems (CN6035)  
 **Εργασία:** Ανάπτυξη Εφαρμογής Κράτησης Θέσεων σε Θεατρικές Παραστάσεις
