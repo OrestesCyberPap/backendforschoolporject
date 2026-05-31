@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, StatusBar, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, StatusBar, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/api';
 
@@ -12,10 +12,11 @@ export default function HomeScreen({ navigation }) {
   const fetchShows = async (query = '') => {
     setLoading(true);
     try {
-      const response = await api.get(`/shows${query ? `?title=${query}` : ''}`);
+      const response = await api.get(`/shows${query ? `?search=${query}` : ''}`);
       setShows(response.data);
     } catch (error) {
       console.error('Error fetching shows:', error);
+      Alert.alert('Error', 'Failed to load shows. Check your connection.');
     } finally {
       setLoading(false);
     }
@@ -62,7 +63,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.searchContainer}>
         <TextInput 
           style={styles.searchInput}
-          placeholder="Search by title..."
+          placeholder="Search by title, theatre, location..."
           placeholderTextColor="#666"
           value={searchQuery}
           onChangeText={setSearchQuery}

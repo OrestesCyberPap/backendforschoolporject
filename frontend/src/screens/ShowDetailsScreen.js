@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
 import api from '../api/api';
 
 export default function ShowDetailsScreen({ route, navigation }) {
@@ -40,6 +40,7 @@ export default function ShowDetailsScreen({ route, navigation }) {
         }
       } catch (error) {
         console.error('Error fetching showtimes:', error);
+        Alert.alert('Error', 'Failed to load showtimes.');
       } finally {
         setLoading(false);
       }

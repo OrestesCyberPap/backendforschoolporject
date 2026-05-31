@@ -6,16 +6,24 @@ export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { register } = useContext(AuthContext);
 
   const handleRegister = async () => {
+    if (!name || !email || !password) {
+      Alert.alert('Validation Error', 'Please fill in all fields.');
+      return;
+    }
+    setLoading(true);
     try {
       await register(name, email, password);
-      Alert.alert("Επιτυχία!", "Ο λογαριασμός δημιουργήθηκε. Τώρα μπορείς να κάνεις Login.", [
+      Alert.alert("Success!", "Account created. You can now log in.", [
         { text: "OK", onPress: () => navigation.navigate('Login') }
       ]);
     } catch (error) {
-      alert(error.message || "Αποτυχία εγγραφής!");
+      Alert.alert('Registration Failed', error.message || 'Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,8 +44,12 @@ export default function RegisterScreen({ navigation }) {
             <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#888" value={password} onChangeText={setPassword} secureTextEntry />
           </View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-            <Text style={styles.loginButtonText}>Sign Up</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={handleRegister} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.loginButtonText}>Sign Up</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.registerLink} onPress={() => navigation.navigate('Login')}>

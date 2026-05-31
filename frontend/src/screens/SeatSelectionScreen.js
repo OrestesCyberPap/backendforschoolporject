@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import api from '../api/api';
 
 const ROWS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -18,6 +18,7 @@ export default function SeatSelectionScreen({ route, navigation }) {
         setBookedSeats(response.data); // Should be an array of strings like ['A1', 'B2']
       } catch (error) {
         console.error('Error fetching seats:', error);
+        Alert.alert('Error', 'Failed to load seat availability.');
       } finally {
         setLoading(false);
       }

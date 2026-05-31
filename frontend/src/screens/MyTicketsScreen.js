@@ -69,6 +69,25 @@ export default function MyTicketsScreen({ route, navigation }) {
         <TouchableOpacity style={styles.cancelBtn} onPress={() => handleCancel(item.reservation_id)}>
           <Text style={styles.cancelText}>Cancel Reservation</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.modifyBtn} 
+          onPress={() => {
+            const imageUrl = `https://via.placeholder.com/150/0a0a0a/E50914?text=${item.show_title.substring(0, 10).toUpperCase()}`;
+            navigation.navigate('ShowDetails', { 
+              show: { 
+                show_id: item.show_id, 
+                title: item.show_title, 
+                description: item.show_description,
+                duration: item.duration,
+                theatre_name: item.theatre_name,
+                image: imageUrl
+              }
+            });
+          }}
+        >
+          <Text style={styles.modifyText}>Modify Reservation</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -116,6 +135,8 @@ const styles = StyleSheet.create({
   ticketInfo: { color: '#aaa', fontSize: 16, marginBottom: 5 },
   qrMock: { marginTop: 20, height: 100, backgroundColor: '#fff', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   qrText: { color: '#000', fontWeight: 'bold', letterSpacing: 2 },
-  cancelBtn: { marginTop: 20, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ff4d4d', alignItems: 'center' },
-  cancelText: { color: '#ff4d4d', fontWeight: 'bold' }
+  cancelBtn: { marginTop: 15, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ff4d4d', alignItems: 'center' },
+  cancelText: { color: '#ff4d4d', fontWeight: 'bold' },
+  modifyBtn: { marginTop: 10, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#4da6ff', alignItems: 'center' },
+  modifyText: { color: '#4da6ff', fontWeight: 'bold' }
 });
