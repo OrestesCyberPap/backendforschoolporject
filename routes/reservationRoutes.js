@@ -5,6 +5,7 @@ const auth = require('../middleware/authMiddleware');
 
 router.post('/', auth, reservationController.createReservation);
 router.get('/user', auth, reservationController.getUserReservations);
+router.put('/:id', auth, reservationController.updateReservation);
 router.delete('/:id', auth, reservationController.cancelReservation);
 
 module.exports = router;

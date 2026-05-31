@@ -4,10 +4,10 @@ exports.getShows = async (req, res) => {
     let conn;
     try {
         conn = await db.getConnection();
-        const { theatreId, title } = req.query;
+        const { theatreId, title, search } = req.query;
         
         let query = `
-            SELECT s.*, t.name as theatre_name 
+            SELECT s.*, t.name as theatre_name, t.location as theatre_location 
             FROM shows s 
             JOIN theatres t ON s.theatre_id = t.theatre_id
             WHERE 1=1
@@ -21,6 +21,10 @@ exports.getShows = async (req, res) => {
         if (title) {
             query += ' AND s.title LIKE ?';
             params.push(`%${title}%`);
+        }
+        if (search) {
+            query += ' AND (s.title LIKE ? OR t.name LIKE ? OR t.location LIKE ?)';
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
         
         const shows = await conn.query(query, params);

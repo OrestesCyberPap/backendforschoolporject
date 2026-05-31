@@ -150,6 +150,7 @@ npx expo start
 
 ### Προφίλ Χρήστη
 - Προβολή ιστορικού κρατήσεων (My Tickets)
+- Τροποποίηση κρατήσεων
 - Ακύρωση κρατήσεων
 
 ---
@@ -163,7 +164,7 @@ npx expo start
 | POST | `/api/auth/login` | Σύνδεση (επιστρέφει JWT) |
 | GET | `/api/theatres` | Λίστα θεάτρων |
 | GET | `/api/shows` | Λίστα παραστάσεων |
-| GET | `/api/shows?title=X` | Αναζήτηση παράστασης |
+| GET | `/api/shows?search=X` | Αναζήτηση (τίτλος, θέατρο, τοποθεσία) |
 | GET | `/api/shows/:id/showtimes` | Ημερομηνίες/ώρες παράστασης |
 | GET | `/api/shows/showtimes/:id/seats` | Πιασμένες θέσεις ανά παράσταση |
 
@@ -172,6 +173,7 @@ npx expo start
 |--------|----------|-----------|
 | POST | `/api/reservations` | Δημιουργία κράτησης |
 | GET | `/api/reservations/user` | Κρατήσεις χρήστη |
+| PUT | `/api/reservations/:id` | Τροποποίηση κράτησης |
 | DELETE | `/api/reservations/:id` | Ακύρωση κράτησης |
 
 ---
